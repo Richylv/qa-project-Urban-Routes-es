@@ -5,7 +5,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
-
 # no modificar
 def retrieve_phone_code(driver) -> str:
     """Este código devuelve un número de confirmación de teléfono y lo devuelve como un string.
@@ -37,6 +36,11 @@ def retrieve_phone_code(driver) -> str:
 class UrbanRoutesPage:
     from_field = (By.ID, 'from')
     to_field = (By.ID, 'to')
+    phone_field = (By.ID, 'phone')
+    code_phone_field = (By.ID, 'code')
+    creditCard_field = (By.ID, 'number')
+    ccv_field = (By.XPATH, '/html/body/div/div/div[2]/div[2]/div[2]/form/div[1]/div[2]/div[2]/div[2]/input')
+    driver_msj_field = (By.ID, 'comment')
 
     def __init__(self, driver):
         self.driver = driver
@@ -53,7 +57,35 @@ class UrbanRoutesPage:
     def get_to(self):
         return self.driver.find_element(*self.to_field).get_property('value')
 
+    def set_phone(self, phone_num):
+        self.driver.find_element(*self.phone_field).send_keys(phone_num)
 
+    def get_phone(self):
+        return self.driver.find_element(*self.phone_field).get_property('value')
+
+    def set_code_phone(self, phone_code):
+        self.driver.find_element(*self.code_phone_field).send_keys(phone_code)
+
+    def get_code_phone(self):
+        return self.driver.find_element(*self.code_phone_field).get_property('value')
+
+    def set_creditCard(self, credit_cart):
+        self.driver.find_element(*self.creditCard_field).send_keys(credit_cart)
+
+    def get_creditCard(self):
+        return self.driver.find_element(*self.creditCard_field).get_property('value')
+
+    def set_ccv(self, ccv):
+        self.driver.find_element(*self.ccv_field).send_keys(ccv)
+
+    def get_ccv(self):
+        return self.driver.find_element(*self.ccv_field).get_property('value')
+
+    def set_driver_msj(self, msj):
+        self.driver.find_element(*self.driver_msj_field).send_keys(msj)
+
+    def get_driver_msj(self):
+        return self.driver.find_element(*self.driver_msj_field).get_property('value')
 
 class TestUrbanRoutes:
 
@@ -65,18 +97,84 @@ class TestUrbanRoutes:
         from selenium.webdriver import DesiredCapabilities
         capabilities = DesiredCapabilities.CHROME
         capabilities["goog:loggingPrefs"] = {'performance': 'ALL'}
-        cls.driver = webdriver.Chrome(desired_capabilities=capabilities)
+        #cls.driver = webdriver.Chrome(desired_capabilities = capabilities)
+        cls.driver = webdriver.Chrome()
 
     def test_set_route(self):
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
         address_from = data.address_from
         address_to = data.address_to
-        routes_page.set_route(address_from, address_to)
+        self.driver.implicitly_wait(3)
+        routes_page.set_from(address_from)
+        routes_page.set_to(address_to)
         assert routes_page.get_from() == address_from
         assert routes_page.get_to() == address_to
 
+    def test_select_comfort(self):
+        self.test_set_route()
+        # Buscar el botón pedir taxi y hacer clic en él
+        self.driver.find_element(By.XPATH, ".//button[@class='button round']").click()
+        # Buscar opcion Comfort y hacer clic
+        self.driver.find_element(By.XPATH, ".//img[@alt='Comfort']").click()
 
-    @classmethod
+    def test_fill_phone(self):
+        self.test_select_comfort()
+        self.driver.find_element(By.XPATH, ".//div[@class='np-button']").click()
+        routes_page = UrbanRoutesPage(self.driver)
+        #Llenar campo de telefono
+        phone_num = data.phone_number
+        routes_page.set_phone(phone_num)
+        assert routes_page.get_phone() == phone_num
+        self.driver.find_element(By.XPATH, ".//button[@class='button full']").click()
+        #Encontrar codigo de confirmacion
+        phone_code = retrieve_phone_code(self.driver)
+        #Lenar campo con codigo de confirmacion
+        routes_page.set_code_phone(phone_code)
+        assert routes_page.get_code_phone() == phone_code
+        self.driver.find_element(By.XPATH, "//*[@id='root']/div/div[1]/div[2]/div[2]/form/div[2]/button[1]").click()
+
+    def test_add_credit_card(self):
+        self.test_fill_phone()
+        self.driver.find_element(By.XPATH, ".//div[@class='pp-button filled']").click()
+        #Seleccionar opcion tarjeta de credito
+        self.driver.find_element(By.XPATH, "//*[@id ='root']/div/div[2]/div[2]/div[1]/div[2]/div[3]/div[2]").click()
+
+        card_num = data.card_number
+        ccv_num = data.card_code
+        routes_page = UrbanRoutesPage(self.driver)
+
+        routes_page.set_creditCard(card_num)
+        routes_page.set_ccv(ccv_num)
+        assert routes_page.get_creditCard() == card_num
+        assert routes_page.get_ccv() == ccv_num
+        #Activar boton 'Agregar'
+        self.driver.find_element(By.XPATH, "//*[@id='number']").click()
+        #click boton 'Agregar'
+        self.driver.find_element(By.XPATH, "//*[@id='root']/div/div[2]/div[2]/div[2]/form/div[3]/button[1]").click()
+        # cerrar pantalla de efectivo/ tarjeta
+        self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[2]/div[1]/button').click()
+
+    def test_msj_driver(self):
+        self.test_add_credit_card()
+        routes_page = UrbanRoutesPage(self.driver)
+        msj = data.message_for_driver
+        routes_page.set_driver_msj(msj)
+        assert routes_page.get_driver_msj() == msj
+        #WebDriverWait(self.driver, 3)
+
+    def test_manta_panuelos(self):
+        self.test_msj_driver()
+        self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div[3]/div[3]/div[2]/div[2]/div[4]/div[2]/div[1]/div/div[2]/div/span').click()
+
+    def test_ice_cream(self):
+        self.test_manta_panuelos()
+        self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div[3]/div[3]/div[2]/div[2]/div[4]/div[2]/div[3]/div/div[2]/div[1]/div/div[2]/div/div[3]').click()
+        self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div[3]/div[3]/div[2]/div[2]/div[4]/div[2]/div[3]/div/div[2]/div[1]/div/div[2]/div/div[3]').click()
+
+    def test_search_taxi(self):
+        self.test_ice_cream()
+        self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div[3]/div[4]/button/span[2]').click()
+
     def teardown_class(cls):
         cls.driver.quit()
