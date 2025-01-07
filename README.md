@@ -6,4 +6,4 @@ tecnologías: PYTHON, selenium
 
 técnicas utilizadas: cada prueba se dividio en diferentes funciones y cada campo input se utilizo el assert para comprobar los resultados 
 
-ejecutar las pruebas: cada prueba se puede ejecutar de manera individual o para realizar TODAS las pruebas hacer clic en la funcion 'test_search_taxi'
+ejecutar las pruebas: Para ejecutar todas las pruebas usa 'pytest TestUrbanRoutes'  en la terminal o verás una flecha verde junto a las pruebas que se utiliza para ejecutarlas 
