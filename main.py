@@ -34,6 +34,7 @@ def retrieve_phone_code(driver) -> str:
 
 
 class UrbanRoutesPage:
+    #CSS selector es utilizado en la funcion: test_select_comfort
     from_field = (By.ID, 'from') #selector 1 ID
     to_field = (By.ID, 'to')
     phone_field = (By.ID, 'phone')
