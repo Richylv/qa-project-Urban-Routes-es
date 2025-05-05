@@ -1,9 +1,21 @@
-Nombre del proyecto: Proyecto del Sprint 8
+![image](https://github.com/user-attachments/assets/a682bd95-b471-47ff-b172-db9a418a01f3)
 
-Descripción del proyecto: en este proyecto se trabajo la automatizacion de las pruebas 
+<em> Proyecto para encotrar en una app para pedir taxi posibles errores </em> 
+En este proyecto se trabajo la automatizacion de las pruebas usando PYTHON, selenium, web browser developer tools
 
-tecnologías: PYTHON, selenium 
+## :hammer:Funcionalidades del proyecto
+Se escriben pruebas automatizadas que cubran el proceso de pedir un taxi:
+- `Funcionalidad 1`:Configurar la dirección.
+- `Funcionalidad 2`:Seleccionar deferentes tarifas
+- `Funcionalidad 3`:Rellenar el número de teléfono.
+- `Funcionalidad 4`:Agregar una tarjeta de crédito.
+- `Funcionalidad 5`:Interceptar el código de confirmación requerido para agregar una tarjeta.
+- `Funcionalidad 6`:Escribir un mensaje para el conductor.
 
-técnicas utilizadas: cada prueba se dividio en diferentes funciones y cada campo input se utilizo el assert para comprobar los resultados 
+## 🛠 tecnologias usadas
+- PYTHON
+- Selenium
+- Web browser developer tools
+- Github
 
-ejecutar las pruebas: Para ejecutar todas las pruebas usa 'pytest qa-project-Urban-Routes-es/main.py'  en la terminal o verás una flecha verde junto a las pruebas que se utiliza para ejecutarlas 
+![image](https://github.com/user-attachments/assets/09c36110-0e94-453d-ae46-e5b4cb562fb8)
